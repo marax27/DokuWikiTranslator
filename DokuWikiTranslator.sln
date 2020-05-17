@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30104.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DokuWikiTranslator.Cli", "DokuWikiTranslator.Cli\DokuWikiTranslator.Cli.csproj", "{B16991BB-CBA3-4944-A252-3CCB41FD701A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokuWikiTranslator.Application.Tests", "tests\DokuWikiTranslator.Application.Tests\DokuWikiTranslator.Application.Tests.csproj", "{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AEB96433-46DB-4B6B-94AA-99C2BB5ABA70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DokuWikiTranslator.Application", "DokuWikiTranslator.Application\DokuWikiTranslator.Application.csproj", "{181F5662-E135-4929-8E9B-54834B43EF1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B16991BB-CBA3-4944-A252-3CCB41FD701A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B16991BB-CBA3-4944-A252-3CCB41FD701A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B16991BB-CBA3-4944-A252-3CCB41FD701A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B16991BB-CBA3-4944-A252-3CCB41FD701A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181F5662-E135-4929-8E9B-54834B43EF1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181F5662-E135-4929-8E9B-54834B43EF1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181F5662-E135-4929-8E9B-54834B43EF1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181F5662-E135-4929-8E9B-54834B43EF1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E22CDE5-AC33-41A7-BECD-E540FA24DBB4} = {AEB96433-46DB-4B6B-94AA-99C2BB5ABA70}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C40A2664-D4F7-46E6-8331-9935E5195CE7}
+	EndGlobalSection
+EndGlobal
