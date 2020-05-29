@@ -3,12 +3,12 @@ using DokuWikiTranslator.Application.Generation.Features;
 using FluentAssertions;
 using Xunit;
 
-namespace DokuWikiTranslator.Application.Tests.Generation
+namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
 {
-    public class WhenGeneratingHtmlElement
+    public class GivenEmptyHtmlElement
     {
         [Fact]
-        public void GivenEmptyElement_ThenExpectedStartingTagIsGenerated()
+        public void WhenGeneratingCode_ThenExpectedStartingTagIsGenerated()
         {
             var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
             var actualResult = element.Generate();
@@ -16,7 +16,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation
         }
 
         [Fact]
-        public void GivenEmptyElement_ThenClosingTagIsNotGenerated()
+        public void WhenGeneratingCode_ThenClosingTagIsNotGenerated()
         {
             var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
             var actualResult = element.Generate();
@@ -24,7 +24,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation
         }
 
         [Fact]
-        public void GivenEmptyElement_ThenShorthandClosingIsUsed()
+        public void WhenGeneratingCode_ThenShorthandClosingIsUsed()
         {
             var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
             var actualResult = element.Generate();
