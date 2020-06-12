@@ -3,7 +3,7 @@ using DokuWikiTranslator.Application.Generation.Abstractions;
 
 namespace DokuWikiTranslator.Application.Generation.Features
 {
-    public class HtmlRawTextElement : ISyntaxTreeNode
+    public class HtmlRawTextElement : IHtmlSyntaxTreeNode
     {
         public string Text { get; }
 
@@ -13,7 +13,7 @@ namespace DokuWikiTranslator.Application.Generation.Features
         public string Generate()
             => Text;
 
-        public IEnumerable<ISyntaxTreeNode> Children
-            => new List<ISyntaxTreeNode>();
+        public IEnumerable<ISyntaxTreeNode<string>> Children
+            => new List<IHtmlSyntaxTreeNode>();
     }
 }

@@ -9,8 +9,8 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
 {
     public class GivenHtmlElementWithChildNodes
     {
-        private readonly HtmlElement _sampleChild = new HtmlElement("sample", new HtmlAttribute[]{}, new ISyntaxTreeNode[]{});
-        private readonly HtmlElement _anotherChild = new HtmlElement("another", new HtmlAttribute[]{}, new ISyntaxTreeNode[]{});
+        private readonly HtmlElement _sampleChild = new HtmlElement("sample", new HtmlAttribute[]{}, Array.Empty<IHtmlSyntaxTreeNode>());
+        private readonly HtmlElement _anotherChild = new HtmlElement("another", new HtmlAttribute[]{}, Array.Empty<IHtmlSyntaxTreeNode>());
 
         [Fact]
         public void WhenGeneratingCode_ThenEachChildAppearsInCode()

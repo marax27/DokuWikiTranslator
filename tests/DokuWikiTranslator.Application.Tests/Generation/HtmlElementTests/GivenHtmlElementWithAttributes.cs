@@ -16,7 +16,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         public void WhenGeneratingCode_ThenEachAttributeKeyIsPresent()
         {
             var givenAttributes = new[] { _sampleAttribute, _anotherAttribute, _keyOnlyAttribute };
-            var element = new HtmlElement("element", givenAttributes, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", givenAttributes, Array.Empty<IHtmlSyntaxTreeNode>());
 
             var resultCode = element.Generate();
 
@@ -28,7 +28,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         public void WhenGeneratingCode_FirstAttributeKeyAppearsBeforeTheSecondKey()
         {
             var givenAttributes = new[] { _sampleAttribute, _anotherAttribute, _keyOnlyAttribute };
-            var element = new HtmlElement("element", givenAttributes, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", givenAttributes, Array.Empty<IHtmlSyntaxTreeNode>());
 
             var resultCode = element.Generate();
 
@@ -41,7 +41,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         public void WhenGeneratingCode_SecondAttributeKeyAppearsBeforeTheThirdKey()
         {
             var givenAttributes = new[] { _sampleAttribute, _anotherAttribute, _keyOnlyAttribute };
-            var element = new HtmlElement("element", givenAttributes, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", givenAttributes, Array.Empty<IHtmlSyntaxTreeNode>());
 
             var resultCode = element.Generate();
 

@@ -5,7 +5,7 @@ using DokuWikiTranslator.Application.Generation.Abstractions;
 
 namespace DokuWikiTranslator.Application.Generation.Features
 {
-    public class HtmlElement : SyntaxTreeNode
+    public class HtmlElement : HtmlSyntaxTreeNode
     {
         public string Name { get; }
         
@@ -14,7 +14,7 @@ namespace DokuWikiTranslator.Application.Generation.Features
         public HtmlElement(
             string elementName,
             IEnumerable<HtmlAttribute> attributes,
-            IReadOnlyCollection<ISyntaxTreeNode> childNodes
+            IReadOnlyCollection<IHtmlSyntaxTreeNode> childNodes
             ) : base(childNodes)
         {
             Name = elementName;

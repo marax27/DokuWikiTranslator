@@ -2,9 +2,9 @@
 
 namespace DokuWikiTranslator.Application.Generation.Abstractions
 {
-    public interface ISyntaxTreeNode
+    public interface ISyntaxTreeNode<out T>
     {
-        string Generate();
-        IEnumerable<ISyntaxTreeNode> Children { get; }
+        T Generate();
+        IEnumerable<ISyntaxTreeNode<T>> Children { get; }
     }
 }

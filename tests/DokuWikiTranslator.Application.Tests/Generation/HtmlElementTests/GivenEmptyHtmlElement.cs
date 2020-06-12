@@ -1,4 +1,5 @@
-﻿using DokuWikiTranslator.Application.Generation.Abstractions;
+﻿using System;
+using DokuWikiTranslator.Application.Generation.Abstractions;
 using DokuWikiTranslator.Application.Generation.Features;
 using FluentAssertions;
 using Xunit;
@@ -10,7 +11,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         [Fact]
         public void WhenGeneratingCode_ThenExpectedStartingTagIsGenerated()
         {
-            var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", new HtmlAttribute[] { }, Array.Empty<IHtmlSyntaxTreeNode>());
             var actualResult = element.Generate();
             actualResult.Should().StartWith("<element");
         }
@@ -18,7 +19,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         [Fact]
         public void WhenGeneratingCode_ThenClosingTagIsNotGenerated()
         {
-            var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", new HtmlAttribute[] { }, Array.Empty<IHtmlSyntaxTreeNode>());
             var actualResult = element.Generate();
             actualResult.Should().NotEndWith("</element>");
         }
@@ -26,7 +27,7 @@ namespace DokuWikiTranslator.Application.Tests.Generation.HtmlElementTests
         [Fact]
         public void WhenGeneratingCode_ThenShorthandClosingIsUsed()
         {
-            var element = new HtmlElement("element", new HtmlAttribute[] { }, new ISyntaxTreeNode[] { });
+            var element = new HtmlElement("element", new HtmlAttribute[] { }, Array.Empty<IHtmlSyntaxTreeNode>());
             var actualResult = element.Generate();
             actualResult.Should().EndWith("/>");
         }
