@@ -5,9 +5,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="DokuWiki\Features\" />
-    <Folder Include="DokuWiki\Abstractions\" />
-  </ItemGroup>
-
 </Project>
