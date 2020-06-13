@@ -22,11 +22,13 @@ namespace DokuWikiTranslator.Application.Scanner
             "->", "<-", "<->", "=>", "<=", "<=>", "<<", ">>", "(c)", "(r)", "(tm)"
         };
 
+        private string _buffer = "";
+
         public IEnumerable<Token> Lex(string sourceCode)
         {
             var stream = new CharacterStream(sourceCode);
             var result = new List<Token>();
-            var buffer = "";
+            _buffer = "";
 
             while (stream.HasNext())
             {
@@ -37,34 +39,35 @@ namespace DokuWikiTranslator.Application.Scanner
                 {
                     var matchingSpecial = _specialStrings.SingleOrDefault(s => stream.Remaining.StartsWith(s));
                     if (matchingSpecial == null)
-                        buffer += current;
+                        _buffer += current;
                     else
                     {
-                        buffer = PopBuffer(result, buffer);
+                        result.AddRange(PopBuffer());
                         result.Add(new Token(TokenType.Special, matchingSpecial));
                         stream.Skip(matchingSpecial.Length - 1);
                     }
                 }
                 else
                 {
-                    buffer = PopBuffer(result, buffer);
+                    result.AddRange(PopBuffer());
                     result.Add(new Token(TokenType.Marker, matchingMarker));
                     stream.Skip(matchingMarker.Length - 1);
                 }
             }
 
-            PopBuffer(result, buffer);
+            result.AddRange(PopBuffer());
             return result;
         }
 
-        private string PopBuffer(ICollection<Token> tokens, string buffer)
+        private IEnumerable<Token> PopBuffer()
         {
-            if (!string.IsNullOrEmpty(buffer))
+            var result = new List<Token>();
+            if (!string.IsNullOrEmpty(_buffer))
             {
-                tokens.Add(new Token(TokenType.Text, buffer));
-                buffer = "";
+                result.Add(new Token(TokenType.Text, _buffer));
+                _buffer = "";
             }
-            return buffer;
+            return result;
         }
     }
 }
