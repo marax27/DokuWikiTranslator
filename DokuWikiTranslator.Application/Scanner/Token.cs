@@ -7,9 +7,12 @@
 
         public Token(TokenType type, string value)
         {
-            this.Type = type;
-            this.Value = value;
+            Type = type;
+            Value = value;
         }
+
+        public override string ToString()
+            => $"<Token({Type}: '{Value}')>";
     }
 
     public enum TokenType
