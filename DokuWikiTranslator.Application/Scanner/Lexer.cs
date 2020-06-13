@@ -40,7 +40,11 @@ namespace DokuWikiTranslator.Application.Scanner
                 {
                     tokens = TryFindSpecial(stream);
                     if (!tokens.Any())
-                        _buffer += current;
+                    {
+                        tokens = TryNewLine(stream);
+                        if (!tokens.Any())
+                            _buffer += current;
+                    }
                 }
                 result.AddRange(tokens);
             }
@@ -71,6 +75,20 @@ namespace DokuWikiTranslator.Application.Scanner
                 result.AddRange(PopBuffer());
                 result.Add(new Token(TokenType.Special, matchingSpecial));
                 stream.Skip(matchingSpecial.Length - 1);
+            }
+            return result.AsReadOnly();
+        }
+
+        private ReadOnlyCollection<Token> TryNewLine(CharacterStream stream)
+        {
+            var result = new List<Token>();
+            string[] newLineIndicators = {"\n", "\r\n"};
+            var matchingIndicator = newLineIndicators.SingleOrDefault(s => stream.Remaining.StartsWith(s));
+            if (matchingIndicator != null)
+            {
+                result.AddRange(PopBuffer());
+                result.Add(new Token(TokenType.NewLine, matchingIndicator));
+                stream.Skip(matchingIndicator.Length - 1);
             }
             return result.AsReadOnly();
         }
