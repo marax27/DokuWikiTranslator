@@ -14,7 +14,12 @@ namespace DokuWikiTranslator.Application.Scanner
     {
         private readonly string[] _markers =
         {
-            "//", "**", "__", "[[", "]]", "{{", "}}"
+            "//", "**", "__", "[[", "]]", "{{", "}}", "%%", "''",
+        };
+
+        private readonly string[] _specialStrings =
+        {
+            "->", "<-", "<->", "=>", "<=", "<=>", "<<", ">>", "(c)", "(r)", "(tm)"
         };
 
         public IEnumerable<Token> Lex(string sourceCode)
@@ -30,7 +35,15 @@ namespace DokuWikiTranslator.Application.Scanner
                 var matchingMarker = _markers.SingleOrDefault(marker => stream.Remaining.StartsWith(marker));
                 if (matchingMarker == null)
                 {
-                    buffer += current;
+                    var matchingSpecial = _specialStrings.SingleOrDefault(s => stream.Remaining.StartsWith(s));
+                    if (matchingSpecial == null)
+                        buffer += current;
+                    else
+                    {
+                        buffer = PopBuffer(result, buffer);
+                        result.Add(new Token(TokenType.Special, matchingSpecial));
+                        stream.Skip(matchingSpecial.Length - 1);
+                    }
                 }
                 else
                 {

@@ -18,6 +18,7 @@
     public enum TokenType
     {
         Marker,
-        Text
+        Text,
+        Special
     }
 }
