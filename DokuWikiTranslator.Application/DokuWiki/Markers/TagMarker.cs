@@ -1,10 +1,14 @@
-﻿
+﻿using System;
+
 namespace DokuWikiTranslator.Application.DokuWiki.Markers
 {
     public class TagMarker : IMarker
     {
         public TagMarker(string dokuWikiMarkerName, string htmlMarkerName)
         {
+            if (string.IsNullOrEmpty(dokuWikiMarkerName))
+                throw new ArgumentException(nameof(dokuWikiMarkerName));
+
             Start = $"<{dokuWikiMarkerName}>";
             End = $"</{dokuWikiMarkerName}>";
             HtmlTag = htmlMarkerName;
