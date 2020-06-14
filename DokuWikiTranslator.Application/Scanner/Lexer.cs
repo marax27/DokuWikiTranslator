@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Scanner.Helpers;
 
 namespace DokuWikiTranslator.Application.Scanner
@@ -13,10 +14,12 @@ namespace DokuWikiTranslator.Application.Scanner
 
     public class Lexer : ILexer
     {
-        private readonly string[] _markers =
+        private readonly ReadOnlyCollection<Marker> _markers;
+
+        public Lexer()
         {
-            "//", "**", "__", "[[", "]]", "{{", "}}", "%%", "''",
-        };
+            _markers = MarkerCollection.GetAllMarkers().ToList().AsReadOnly();
+        }
 
         private readonly string[] _specialStrings =
         {
@@ -56,12 +59,25 @@ namespace DokuWikiTranslator.Application.Scanner
         private ReadOnlyCollection<Token> TryFindMarker(CharacterStream stream)
         {
             var result = new List<Token>();
-            var matchingMarker = _markers.SingleOrDefault(marker => stream.Remaining.StartsWith(marker));
-            if (matchingMarker != null)
+
+            string? foundString = null;
+            var matches = _markers
+                .Where(marker => stream.Remaining.StartsWith(marker.Start)).ToList();
+            if (matches.Any())
+                foundString = matches.Single().Start;
+            else
+            {
+                matches = _markers
+                    .Where(marker => stream.Remaining.StartsWith(marker.End)).ToList();
+                if (matches.Any())
+                    foundString = matches.Single().End;
+            }
+
+            if (foundString != null)
             {
                 result.AddRange(PopBuffer());
-                result.Add(new Token(TokenType.Marker, matchingMarker));
-                stream.Skip(matchingMarker.Length - 1);
+                result.Add(new Token(TokenType.Marker, foundString));
+                stream.Skip(foundString.Length - 1);
             }
             return result.AsReadOnly();
         }
