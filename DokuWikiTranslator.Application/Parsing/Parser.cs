@@ -66,7 +66,6 @@ namespace DokuWikiTranslator.Application.Parsing
                 var current = stream.Next();
                 while (current.Value != foundMarker.End)
                 {
-                    Console.WriteLine($" ({foundMarker})--> {current}");
                     innerTokens.Add(current);
                     current = stream.Next();
                 }

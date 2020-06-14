@@ -48,9 +48,7 @@ namespace DokuWikiTranslator.Application.Scanner
             }
 
             result.AddRange(PopBuffer());
-            return result.Select(token => { Console.Write($"[{token.Value}] ");
-                return token;
-            });
+            return result;
         }
 
         private ReadOnlyCollection<Token> TryFindUrl(ICharacterStream stream)
