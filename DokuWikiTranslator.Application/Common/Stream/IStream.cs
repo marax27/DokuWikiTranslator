@@ -2,10 +2,9 @@
 
 namespace DokuWikiTranslator.Application.Common.Stream
 {
-    public interface IStream<T>
+    public interface IStream<out T>
     {
         T Next();
         bool HasNext();
-        ReadOnlySpan<T> Remaining { get; }
     }
 }

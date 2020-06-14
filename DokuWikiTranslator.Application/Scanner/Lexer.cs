@@ -15,13 +15,6 @@ namespace DokuWikiTranslator.Application.Scanner
 
     public class Lexer : ILexer
     {
-        private readonly ReadOnlyCollection<Marker> _markers;
-
-        public Lexer()
-        {
-            _markers = MarkerCollection.GetAllMarkers().ToList().AsReadOnly();
-        }
-
         private readonly string[] _specialStrings =
         {
             "->", "<-", "<->", "=>", "<=", "<=>", "<<", ">>", "(c)", "(r)", "(tm)"
@@ -31,7 +24,7 @@ namespace DokuWikiTranslator.Application.Scanner
 
         public IEnumerable<Token> Lex(string sourceCode)
         {
-            var stream = new CharacterStream(sourceCode);
+            ICharacterStream stream = new CharacterStream(sourceCode);
             var result = new List<Token>();
             _buffer = "";
 
@@ -57,18 +50,18 @@ namespace DokuWikiTranslator.Application.Scanner
             return result;
         }
 
-        private ReadOnlyCollection<Token> TryFindMarker(CharacterStream stream)
+        private ReadOnlyCollection<Token> TryFindMarker(ICharacterStream stream)
         {
             var result = new List<Token>();
 
             string? foundString = null;
-            var matches = _markers
+            var matches = MarkerCollection.LanguageMarkers
                 .Where(marker => stream.Remaining.StartsWith(marker.Start)).ToList();
             if (matches.Any())
                 foundString = matches.Single().Start;
             else
             {
-                matches = _markers
+                matches = MarkerCollection.LanguageMarkers
                     .Where(marker => stream.Remaining.StartsWith(marker.End)).ToList();
                 if (matches.Any())
                     foundString = matches.Single().End;
@@ -83,7 +76,7 @@ namespace DokuWikiTranslator.Application.Scanner
             return result.AsReadOnly();
         }
 
-        private ReadOnlyCollection<Token> TryFindSpecial(CharacterStream stream)
+        private ReadOnlyCollection<Token> TryFindSpecial(ICharacterStream stream)
         {
             var result = new List<Token>();
             var matchingSpecial = _specialStrings.SingleOrDefault(s => stream.Remaining.StartsWith(s));
@@ -96,7 +89,7 @@ namespace DokuWikiTranslator.Application.Scanner
             return result.AsReadOnly();
         }
 
-        private ReadOnlyCollection<Token> TryNewLine(CharacterStream stream)
+        private ReadOnlyCollection<Token> TryNewLine(ICharacterStream stream)
         {
             var result = new List<Token>();
             string[] newLineIndicators = {"\n", "\r\n"};

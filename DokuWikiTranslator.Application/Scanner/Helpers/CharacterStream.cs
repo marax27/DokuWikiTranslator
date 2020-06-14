@@ -3,7 +3,12 @@ using DokuWikiTranslator.Application.Common.Stream;
 
 namespace DokuWikiTranslator.Application.Scanner.Helpers
 {
-    public class CharacterStream : IStream<char>
+    public interface ICharacterStream : IStream<char>
+    {
+        ReadOnlySpan<char> Remaining { get; }
+    }
+
+    public class CharacterStream : ICharacterStream
     {
         private readonly string _data;
         private int _index;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DokuWikiTranslator.Application.DokuWiki.Abstractions;
+using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Generation.Abstractions;
 using DokuWikiTranslator.Application.Generation.Features;
 
@@ -9,13 +11,13 @@ namespace DokuWikiTranslator.Application.DokuWiki.Features
 {
     public class BasicMarkerNode : DokuWikiTreeNode
     {
-        public BasicMarkerNode(string sourceCode, IReadOnlyCollection<DokuWikiTreeNode> childNodes, IDokuWikiMarker marker)
+        public BasicMarkerNode(string sourceCode, ReadOnlyCollection<IDokuWikiTreeNode> childNodes, IHtmlMarker marker)
             : base(sourceCode, childNodes)
         {
             Marker = marker;
         }
 
-        public IDokuWikiMarker Marker { get; }
+        public IHtmlMarker Marker { get; }
 
         public override IHtmlSyntaxTreeNode Generate()
         {
