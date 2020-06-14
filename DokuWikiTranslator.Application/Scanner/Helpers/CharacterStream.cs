@@ -1,20 +1,8 @@
 ﻿using System;
+using DokuWikiTranslator.Application.Common.Stream;
 
 namespace DokuWikiTranslator.Application.Scanner.Helpers
 {
-    public class EndOfDataException : Exception
-    {
-        public EndOfDataException(string message)
-            : base(message) { }
-    }
-
-    public interface IStream<T>
-    {
-        T Next();
-        bool HasNext();
-        ReadOnlySpan<T> Remaining { get; }
-    }
-
     public class CharacterStream : IStream<char>
     {
         private readonly string _data;
@@ -33,7 +21,7 @@ namespace DokuWikiTranslator.Application.Scanner.Helpers
         {
             if (HasNext())
                 return _data[++_index];
-            throw new EndOfDataException($"Failed to read character no. {_index + 1}: no more characters to read.");
+            throw new StreamEndException($"Failed to read character no. {_index + 1}: no more characters to read.");
         }
 
         public bool HasNext()

@@ -1,4 +1,4 @@
-﻿namespace DokuWikiTranslator.Application.Scanner.Helpers
+﻿namespace DokuWikiTranslator.Application.Common.Stream
 {
     public static class StreamExtensions
     {

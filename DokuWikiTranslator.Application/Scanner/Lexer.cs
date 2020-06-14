@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DokuWikiTranslator.Application.Common.Stream;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Scanner.Helpers;
 
