@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DokuWikiTranslator.Application.Common.Stream;
@@ -64,27 +66,51 @@ namespace DokuWikiTranslator.Application.Parsing
                 current = stream.Next();
             }
 
-            var sourceCode = GetSourceCode(new[] {startToken}.Concat(innerTokens).Concat(new[] {current}));
-            var innerNodes = HandleInner(innerTokens, foundMarker);
-            return new BasicMarkerNode(sourceCode, innerNodes, foundMarker);
+            return CreateMarkerNode(startToken, innerTokens, current, foundMarker);
         }
 
-        private ReadOnlyCollection<IDokuWikiTreeNode> HandleInner(IEnumerable<Token> tokens, IMarker marker)
+        private IDokuWikiTreeNode CreateMarkerNode(Token startToken, IList<Token> innerTokens, Token endToken, IMarker marker)
         {
-            var start = marker.Start;
-            var result = new List<IDokuWikiTreeNode>();
+            if (startToken.Type != TokenType.Marker)
+                throw new ArgumentException($"{startToken} is not a marker.");
 
-            if (new[] {"%%", "<nowiki>"}.Contains(start))
-            {
-                var text = string.Join("", tokens.Select(token => token.Value));
-                result.Add(new RawTextNode(text));
-            }
-            else
-            {
-                result.AddRange(Parse(tokens));
-            }
+            var sourceCode = GetSourceCode(new[] { startToken }.Concat(innerTokens).Concat(new[] { endToken }));
+            var innerText = string.Join("", innerTokens.Select(t => t.Value));
 
-            return result.AsReadOnly();
+            switch (startToken.Value)
+            {
+                case "%%":
+                case "<nowiki>":
+                    return new RawTextNode(innerText);
+                case "[[":
+                    return HandleHyperlink(innerText, sourceCode);
+                case "{{":
+                    return HandleMedia(innerText, sourceCode);
+                default:
+                    return new BasicMarkerNode(sourceCode, ProcessInnerNodesRecursively(innerTokens), marker);
+            }
+        }
+
+        private MediaNode HandleMedia(string innerText, string sourceCode)
+        {
+            var parts = innerText.Split('|', 2);
+            var url = parts[0];
+            var description = parts.Length > 1 ? parts[1] : null;
+            return new MediaNode(url, description, sourceCode);
+        }
+
+        private HyperlinkNode HandleHyperlink(string innerText, string sourceCode)
+        {
+            var parts = innerText.Split('|', 2);
+            var url = parts[0];
+            var description = parts.Length > 1 ? parts[1] : url;
+            return new HyperlinkNode(url, description, sourceCode, new List<DokuWikiTreeNode>());
+        }
+
+        private ReadOnlyCollection<IDokuWikiTreeNode> ProcessInnerNodesRecursively(IEnumerable<Token> tokens)
+        {
+            var result = Parse(tokens);
+            return result.ToList().AsReadOnly();
         }
 
         private string GetSourceCode(IEnumerable<Token> tokens)
