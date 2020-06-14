@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Xml.XPath;
+using System.Runtime.InteropServices.ComTypes;
 using DokuWikiTranslator.Application.Common.Stream;
 using DokuWikiTranslator.Application.DokuWiki.Abstractions;
 using DokuWikiTranslator.Application.DokuWiki.Features;
@@ -27,10 +28,10 @@ namespace DokuWikiTranslator.Application.Parsing
                 switch (current.Type)
                 {
                     case TokenType.Text:
-                        result.Add(new RawTextNode(current.Value, current.Value));
+                        result.Add(new RawTextNode(current.Value));
                         break;
                     case TokenType.Special:
-                        result.Add(new RawTextNode("TODO!", current.Value));
+                        result.Add(new RawTextNode("TODO!"));
                         break;
                     case TokenType.Marker:
                         result.Add(ProcessMarker(current, stream));
@@ -57,8 +58,26 @@ namespace DokuWikiTranslator.Application.Parsing
             }
 
             var sourceCode = GetSourceCode(new[] {startToken}.Concat(innerTokens).Concat(new[] {current}));
-            var innerNodes = Parse(innerTokens).ToList().AsReadOnly();
+            var innerNodes = HandleInner(innerTokens, marker);
             return new BasicMarkerNode(sourceCode, innerNodes, marker);
+        }
+
+        private ReadOnlyCollection<IDokuWikiTreeNode> HandleInner(IEnumerable<Token> tokens, IMarker marker)
+        {
+            var start = marker.Start;
+            var result = new List<IDokuWikiTreeNode>();
+
+            if (new[] {"%%", "<nowiki>"}.Contains(start))
+            {
+                var text = string.Join("", tokens.Select(token => token.Value));
+                result.Add(new RawTextNode(text));
+            }
+            else
+            {
+                result.AddRange(Parse(tokens));
+            }
+
+            return result.AsReadOnly();
         }
 
         private string GetSourceCode(IEnumerable<Token> tokens)

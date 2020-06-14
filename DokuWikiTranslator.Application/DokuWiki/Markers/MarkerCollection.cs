@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
-
-namespace DokuWikiTranslator.Application.DokuWiki.Markers
+﻿namespace DokuWikiTranslator.Application.DokuWiki.Markers
 {
     public static class MarkerCollection
     {
-        public static readonly Marker[] LanguageMarkers =
+        public static readonly IMarker[] LanguageMarkers =
         {
-            new Marker("//", "//", "i"),
-            new Marker("**", "**", "b"),
-            new Marker("__", "__", "u"),
-            new Marker("[[", "]]", "a"),
-            new Marker("{{", "}}", "img"),
-            new Marker("%%", "%%", "pre"),
-            new Marker("''", "''", "tt")
+            new AsymmetricMarker("//", "//", "i"),
+            new AsymmetricMarker("**", "**", "b"),
+            new AsymmetricMarker("__", "__", "u"),
+            new AsymmetricMarker("[[", "]]", "a"),
+            new AsymmetricMarker("{{", "}}", "img"),
+            new AsymmetricMarker("%%", "%%", "pre"),
+            new AsymmetricMarker("''", "''", "tt"),
+            new TagMarker("nowiki", "pre"),
+            new TagMarker("sup", "sup"), 
+            new TagMarker("sub", "sub"), 
+            new TagMarker("del", "strike"),
         };
     }
 }

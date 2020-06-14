@@ -1,17 +1,12 @@
 ﻿namespace DokuWikiTranslator.Application.DokuWiki.Markers
 {
-    public interface IHtmlMarker
-    {
-        string HtmlTag { get; }
-    }
-
-    public readonly struct Marker : IHtmlMarker
+    public readonly struct AsymmetricMarker : IMarker
     {
         public string Start { get; }
         public string End { get; }
         public string HtmlTag { get; }
 
-        public Marker(string start, string end, string htmlTag)
+        public AsymmetricMarker(string start, string end, string htmlTag)
         {
             Start = start;
             End = end;

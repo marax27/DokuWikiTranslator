@@ -15,7 +15,7 @@ namespace DokuWikiTranslator.Application.DokuWiki.Abstractions
         public IEnumerable<ISyntaxTreeNode<IHtmlSyntaxTreeNode>> Children { get; }
         public string SourceCode { get; }
 
-        public DokuWikiTreeNode(string sourceCode, IReadOnlyCollection<IDokuWikiTreeNode> childNodes)
+        protected DokuWikiTreeNode(string sourceCode, IReadOnlyCollection<IDokuWikiTreeNode> childNodes)
         {
             Children = childNodes;
             SourceCode = sourceCode;

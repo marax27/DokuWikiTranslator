@@ -8,14 +8,13 @@ namespace DokuWikiTranslator.Application.DokuWiki.Features
 {
     public class RawTextNode : IDokuWikiTreeNode
     {
-        public RawTextNode(string text, string sourceCode)
+        public RawTextNode(string text)
         {
             Text = text;
-            SourceCode = sourceCode;
         }
 
         public string Text { get; }
-        public string SourceCode { get; }
+        public string SourceCode => Text;
 
         public IEnumerable<ISyntaxTreeNode<IHtmlSyntaxTreeNode>> Children
             => Array.Empty<ISyntaxTreeNode<IHtmlSyntaxTreeNode>>();
