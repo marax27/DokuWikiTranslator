@@ -1,0 +1,5 @@
+sample text**//very <del>artistic</del>{// not-so much**...
+
+
+Something=>Else, **<<xyz>>**. Now, %%__this__ text **shan't** be formatted.%%  
+ end of text
