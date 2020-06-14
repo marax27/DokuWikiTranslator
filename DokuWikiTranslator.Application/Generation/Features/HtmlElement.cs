@@ -27,11 +27,14 @@ namespace DokuWikiTranslator.Application.Generation.Features
             // 1. <abc attributes>body</abc>
             // 2. <abc attributes />
             var attributes = GetAttributesCode();
+            if (!string.IsNullOrEmpty(attributes))
+                attributes = ' ' + attributes;
+
             var body = GetBody();
 
             return string.IsNullOrEmpty(body)
-                ? $"<{Name} {attributes} />"
-                : $"<{Name} {attributes}>{body}</{Name}>";
+                ? $"<{Name}{attributes} />"
+                : $"<{Name}{attributes}>{body}</{Name}>";
         }
 
         private string GetAttributesCode()
