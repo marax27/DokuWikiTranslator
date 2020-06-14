@@ -1,4 +1,6 @@
-﻿namespace DokuWikiTranslator.Application.DokuWiki.Markers
+﻿using DokuWikiTranslator.Application.DokuWiki.Markers;
+
+namespace DokuWikiTranslator.Application.DokuWiki
 {
     public static class MarkerCollection
     {
@@ -9,9 +11,9 @@
             new AsymmetricMarker("__", "__", "u"),
             new AsymmetricMarker("[[", "]]", "a"),
             new AsymmetricMarker("{{", "}}", "img"),
-            new AsymmetricMarker("%%", "%%", "pre"),
+            new AsymmetricMarker("%%", "%%", ""),
             new AsymmetricMarker("''", "''", "tt"),
-            new TagMarker("nowiki", "pre"),
+            new TagMarker("nowiki", ""),
             new TagMarker("sup", "sup"), 
             new TagMarker("sub", "sub"), 
             new TagMarker("del", "strike"),

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using DokuWikiTranslator.Application.Common.Stream;
+using DokuWikiTranslator.Application.DokuWiki;
 using DokuWikiTranslator.Application.DokuWiki.Abstractions;
 using DokuWikiTranslator.Application.DokuWiki.Features;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
@@ -31,7 +31,7 @@ namespace DokuWikiTranslator.Application.Parsing
                         result.Add(new RawTextNode(current.Value));
                         break;
                     case TokenType.Special:
-                        result.Add(new RawTextNode("TODO!"));
+                        result.Add(ProcessSpecial(current));
                         break;
                     case TokenType.Marker:
                         result.Add(ProcessMarker(current, stream));
@@ -44,22 +44,29 @@ namespace DokuWikiTranslator.Application.Parsing
             return result;
         }
 
+        private IDokuWikiTreeNode ProcessSpecial(Token current)
+        {
+            var special = SpecialStringCollection.SpecialStrings
+                .Single(s => s.Source == current.Value);
+            return new RawTextNode(special.Output);
+        }
+
         private IDokuWikiTreeNode ProcessMarker(Token startToken, IStream<Token> stream)
         {
             var allMarkers = MarkerCollection.LanguageMarkers;
-            var marker = allMarkers.Single(marker => marker.Start == startToken.Value);
+            var foundMarker = allMarkers.Single(marker => marker.Start == startToken.Value);
 
             var innerTokens = new List<Token>();
             var current = stream.Next();
-            while (current.Value != marker.End)
+            while (current.Value != foundMarker.End)
             {
                 innerTokens.Add(current);
                 current = stream.Next();
             }
 
             var sourceCode = GetSourceCode(new[] {startToken}.Concat(innerTokens).Concat(new[] {current}));
-            var innerNodes = HandleInner(innerTokens, marker);
-            return new BasicMarkerNode(sourceCode, innerNodes, marker);
+            var innerNodes = HandleInner(innerTokens, foundMarker);
+            return new BasicMarkerNode(sourceCode, innerNodes, foundMarker);
         }
 
         private ReadOnlyCollection<IDokuWikiTreeNode> HandleInner(IEnumerable<Token> tokens, IMarker marker)

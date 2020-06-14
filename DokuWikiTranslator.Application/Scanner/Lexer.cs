@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DokuWikiTranslator.Application.Common.Stream;
+using DokuWikiTranslator.Application.DokuWiki;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Scanner.Helpers;
 
@@ -15,11 +16,6 @@ namespace DokuWikiTranslator.Application.Scanner
 
     public class Lexer : ILexer
     {
-        private readonly string[] _specialStrings =
-        {
-            "->", "<-", "<->", "=>", "<=", "<=>", "<<", ">>", "(c)", "(r)", "(tm)"
-        };
-
         private string _buffer = "";
 
         public IEnumerable<Token> Lex(string sourceCode)
@@ -77,14 +73,15 @@ namespace DokuWikiTranslator.Application.Scanner
         }
 
         private ReadOnlyCollection<Token> TryFindSpecial(ICharacterStream stream)
-        {
+        { 
             var result = new List<Token>();
-            var matchingSpecial = _specialStrings.SingleOrDefault(s => stream.Remaining.StartsWith(s));
+            var matchingSpecial = SpecialStringCollection.SpecialStrings
+                .SingleOrDefault(s => stream.Remaining.StartsWith(s.Source));
             if (matchingSpecial != null)
             {
                 result.AddRange(PopBuffer());
-                result.Add(new Token(TokenType.Special, matchingSpecial));
-                stream.Skip(matchingSpecial.Length - 1);
+                result.Add(new Token(TokenType.Special, matchingSpecial.Source));
+                stream.Skip(matchingSpecial.Source.Length - 1);
             }
             return result.AsReadOnly();
         }
