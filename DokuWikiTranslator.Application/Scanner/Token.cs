@@ -20,6 +20,7 @@
         Marker,
         Text,
         Special,
-        NewLine
+        NewLine,
+        Url
     }
 }

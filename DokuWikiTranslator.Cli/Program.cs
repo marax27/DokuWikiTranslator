@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using DokuWikiTranslator.Application;
 using DokuWikiTranslator.Application.Exceptions;
@@ -27,7 +27,7 @@ namespace DokuWikiTranslator.Cli
             }
             catch (TranslationException exc)
             {
-                Console.WriteLine($"Error: {exc.Message}");
+                Console.WriteLine($"Error: {exc.Message}\n{exc.InnerException}");
             }
         }
 

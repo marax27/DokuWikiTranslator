@@ -17,5 +17,8 @@ namespace DokuWikiTranslator.Application.DokuWiki.Markers
         public string Start { get; }
         public string End { get; }
         public string HtmlTag { get; }
+
+        public override string ToString()
+            => $"<TagMarker({Start}, {End}) -> {HtmlTag}>";
     }
 }

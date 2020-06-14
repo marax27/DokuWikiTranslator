@@ -8,6 +8,7 @@ using DokuWikiTranslator.Application.DokuWiki;
 using DokuWikiTranslator.Application.DokuWiki.Abstractions;
 using DokuWikiTranslator.Application.DokuWiki.Features;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
+using DokuWikiTranslator.Application.Exceptions;
 using DokuWikiTranslator.Application.Scanner;
 
 namespace DokuWikiTranslator.Application.Parsing
@@ -38,8 +39,9 @@ namespace DokuWikiTranslator.Application.Parsing
                     case TokenType.Marker:
                         result.Add(ProcessMarker(current, stream));
                         break;
-                    default:
-                        continue;
+                    case TokenType.Url:
+                        result.Add(new HyperlinkNode(current.Value, null, current.Value));
+                        break;
                 }
             }
 
@@ -58,15 +60,23 @@ namespace DokuWikiTranslator.Application.Parsing
             var allMarkers = MarkerCollection.LanguageMarkers;
             var foundMarker = allMarkers.Single(marker => marker.Start == startToken.Value);
 
-            var innerTokens = new List<Token>();
-            var current = stream.Next();
-            while (current.Value != foundMarker.End)
+            try
             {
-                innerTokens.Add(current);
-                current = stream.Next();
-            }
+                var innerTokens = new List<Token>();
+                var current = stream.Next();
+                while (current.Value != foundMarker.End)
+                {
+                    Console.WriteLine($" ({foundMarker})--> {current}");
+                    innerTokens.Add(current);
+                    current = stream.Next();
+                }
 
-            return CreateMarkerNode(startToken, innerTokens, current, foundMarker);
+                return CreateMarkerNode(startToken, innerTokens, current, foundMarker);
+            }
+            catch (StreamEndException exc)
+            {
+                throw new TranslationException($"Failed while processing marker {foundMarker}", exc);
+            }
         }
 
         private IDokuWikiTreeNode CreateMarkerNode(Token startToken, IList<Token> innerTokens, Token endToken, IMarker marker)
@@ -104,7 +114,7 @@ namespace DokuWikiTranslator.Application.Parsing
             var parts = innerText.Split('|', 2);
             var url = parts[0];
             var description = parts.Length > 1 ? parts[1] : url;
-            return new HyperlinkNode(url, description, sourceCode, new List<DokuWikiTreeNode>());
+            return new HyperlinkNode(url, description, sourceCode);
         }
 
         private ReadOnlyCollection<IDokuWikiTreeNode> ProcessInnerNodesRecursively(IEnumerable<Token> tokens)

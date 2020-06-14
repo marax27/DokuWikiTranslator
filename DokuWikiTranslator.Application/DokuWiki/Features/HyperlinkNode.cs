@@ -9,8 +9,8 @@ namespace DokuWikiTranslator.Application.DokuWiki.Features
 {
     public class HyperlinkNode : DokuWikiTreeNode
     {
-        public HyperlinkNode(string url, string? description, string sourceCode, IReadOnlyCollection<DokuWikiTreeNode> childNodes)
-            : base(sourceCode, childNodes)
+        public HyperlinkNode(string url, string? description, string sourceCode)
+            : base(sourceCode, new []{ new RawTextNode(description ?? url) })
         {
             Url = url;
             Description = description;

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using DokuWikiTranslator.Application.Common;
 using DokuWikiTranslator.Application.Common.Stream;
 using DokuWikiTranslator.Application.DokuWiki;
-using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Scanner.Helpers;
 
 namespace DokuWikiTranslator.Application.Scanner
@@ -28,22 +28,45 @@ namespace DokuWikiTranslator.Application.Scanner
             {
                 var current = stream.Next();
 
-                ReadOnlyCollection<Token> tokens = TryFindMarker(stream);
+                ReadOnlyCollection<Token> tokens = TryFindUrl(stream);
+
                 if (!tokens.Any())
                 {
-                    tokens = TryFindSpecial(stream);
+                    tokens = TryFindMarker(stream);
                     if (!tokens.Any())
                     {
-                        tokens = TryNewLine(stream);
+                        tokens = TryFindSpecial(stream);
                         if (!tokens.Any())
-                            _buffer += current;
+                        {
+                            tokens = TryNewLine(stream);
+                            if (!tokens.Any())
+                                _buffer += current;
+                        }
                     }
                 }
                 result.AddRange(tokens);
             }
 
             result.AddRange(PopBuffer());
-            return result;
+            return result.Select(token => { Console.Write($"[{token.Value}] ");
+                return token;
+            });
+        }
+
+        private ReadOnlyCollection<Token> TryFindUrl(ICharacterStream stream)
+        {
+            var result = new List<Token>();
+            var textEnd = stream.Remaining.IndexOfAny(" \t\r\n".ToArray());
+            var substring = stream.Remaining[..textEnd].ToString();
+
+            if (substring.IsValidUrl())
+            {
+                result.AddRange(PopBuffer());
+                result.Add(new Token(TokenType.Url, substring));
+                stream.Skip(substring.Length - 1);
+            }
+
+            return result.AsReadOnly();
         }
 
         private ReadOnlyCollection<Token> TryFindMarker(ICharacterStream stream)
@@ -76,7 +99,8 @@ namespace DokuWikiTranslator.Application.Scanner
         { 
             var result = new List<Token>();
             var matchingSpecial = SpecialStringCollection.SpecialStrings
-                .SingleOrDefault(s => stream.Remaining.StartsWith(s.Source));
+                .Where(s => stream.Remaining.StartsWith(s.Source))
+                .LongestOrNull(ms => ms.Source);
             if (matchingSpecial != null)
             {
                 result.AddRange(PopBuffer());
