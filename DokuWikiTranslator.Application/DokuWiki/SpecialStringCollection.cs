@@ -6,17 +6,17 @@ namespace DokuWikiTranslator.Application.DokuWiki
     {
         public static readonly SpecialString[] SpecialStrings =
         {
-            new SpecialString("->", "→"),
-            new SpecialString("<-", "←"),
-            new SpecialString("<->", "↔"),
-            new SpecialString("=>", "⇒"),
-            new SpecialString("<=", "⇐"),
-            new SpecialString("<=>", "⇔"),
-            new SpecialString("<<", "«"),
-            new SpecialString(">>", "»"),
-            new SpecialString("(c)", "©"),
-            new SpecialString("(r)", "®"),
-            new SpecialString("(tm)", "™"),
+            new SpecialString("->", "&rarr;"),
+            new SpecialString("<-", "&larr;"),
+            new SpecialString("<->", "&harr;"),
+            new SpecialString("=>", "&rArr;"),
+            new SpecialString("<=", "&lArr;"),
+            new SpecialString("<=>", "&hArr;"),
+            new SpecialString("<<", "&laquo;"),
+            new SpecialString(">>", "&raquo;"),
+            new SpecialString("(c)", "&copy;"),
+            new SpecialString("(r)", "&reg;"),
+            new SpecialString("(tm)", "&trade;"),
         };
     }
 }
