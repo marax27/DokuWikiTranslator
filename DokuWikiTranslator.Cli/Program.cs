@@ -7,13 +7,19 @@ namespace DokuWikiTranslator.Cli
 {
     class Program
     {
-        private const string SampleSourceCode = "sample text**//very <del>artistic</del>{// not-so much**...\n\r\n\nSomething=>Else, **<<xyz>>**. Now, %%__this__ text **shan't** be formatted.%%  \r\n end of text";
-
         static void Main(string[] args)
         {
-            var sourceCode = args.Length < 2 ? SampleSourceCode : LoadSourceFile(args[1]);
-            var translator = new Translator();
+            if (args.Length < 2)
+            {
+                Console.WriteLine("Error: Filename not provided.");
+                return;
+            }
 
+            var sourceCode = LoadSourceFile(args[1]);
+            if (sourceCode == null)
+                return;
+
+            var translator = new Translator();
             try
             {
                 var outputCode = translator.Translate(sourceCode);
@@ -25,9 +31,17 @@ namespace DokuWikiTranslator.Cli
             }
         }
 
-        private static string LoadSourceFile(string filename)
+        private static string? LoadSourceFile(string filename)
         {
-            return File.ReadAllText(filename);
+            try
+            {
+                return File.ReadAllText(filename);
+            }
+            catch (IOException exc)
+            {
+                Console.WriteLine($"Error: {exc.Message}");
+                return null;
+            }
         }
     }
 }
