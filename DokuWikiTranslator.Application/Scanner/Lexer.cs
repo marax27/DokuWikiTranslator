@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using DokuWikiTranslator.Application.Common;
 using DokuWikiTranslator.Application.Common.Stream;
 using DokuWikiTranslator.Application.DokuWiki;
+using DokuWikiTranslator.Application.Exceptions;
 using DokuWikiTranslator.Application.Scanner.Helpers;
 
 namespace DokuWikiTranslator.Application.Scanner
@@ -23,28 +25,41 @@ namespace DokuWikiTranslator.Application.Scanner
             ICharacterStream stream = new CharacterStream(sourceCode);
             var result = new List<Token>();
             _buffer = "";
+            int lineCounter = 1;
+            var isFirstToken = true;
 
-            while (stream.HasNext())
+            try
             {
-                var current = stream.Next();
-
-                ReadOnlyCollection<Token> tokens = TryFindUrl(stream);
-
-                if (!tokens.Any())
+                while (stream.HasNext())
                 {
-                    tokens = TryFindMarker(stream);
+                    var current = stream.Next();
+
+                    ReadOnlyCollection<Token> tokens = TryFindUrl(stream);
+
                     if (!tokens.Any())
                     {
-                        tokens = TryFindSpecial(stream);
+                        tokens = TryFindMarker(stream);
                         if (!tokens.Any())
                         {
-                            tokens = TryNewLine(stream);
+                            tokens = TryFindSpecial(stream);
                             if (!tokens.Any())
-                                _buffer += current;
+                            {
+                                tokens = TryNewLine(stream, isFirstToken);
+                                if (tokens.Any(token => token.Type == TokenType.NewLine))
+                                    ++lineCounter;
+                                if (!tokens.Any())
+                                    _buffer += current;
+                            }
                         }
                     }
+
+                    result.AddRange(tokens);
+                    isFirstToken = false;
                 }
-                result.AddRange(tokens);
+            }
+            catch (Exception exc)
+            {
+                throw new TranslationException($"Lexer error at line {lineCounter}: {exc.Message}", exc);
             }
 
             result.AddRange(PopBuffer());
@@ -108,17 +123,42 @@ namespace DokuWikiTranslator.Application.Scanner
             return result.AsReadOnly();
         }
 
-        private ReadOnlyCollection<Token> TryNewLine(ICharacterStream stream)
+        private ReadOnlyCollection<Token> TryNewLine(ICharacterStream stream, bool sourceBeginning)
         {
+            // Find newline.
             var result = new List<Token>();
-            string[] newLineIndicators = {"\n", "\r\n"};
-            var matchingIndicator = newLineIndicators.SingleOrDefault(s => stream.Remaining.StartsWith(s));
-            if (matchingIndicator != null)
+            if (stream.Remaining.StartsWith("\n") || sourceBeginning)
             {
-                result.AddRange(PopBuffer());
-                result.Add(new Token(TokenType.NewLine, matchingIndicator));
-                stream.Skip(matchingIndicator.Length - 1);
+                if (stream.Remaining.StartsWith("\n"))
+                {
+                    result.AddRange(PopBuffer());
+                    result.Add(new Token(TokenType.NewLine, "\n"));
+                }
+
+                // Find start-of-line marker.
+                string[] patterns = { @">+", @"==+", @"[^\*](\*)[^\*]", @"[^-](-)[^-]", "----+" };
+                var remaining = stream.Remaining.ToString();
+                var index = remaining.IndexOf(ch => !char.IsWhiteSpace(ch));
+                if (index != -1)
+                {
+                    var bestMatch = patterns
+                        .Select(pattern => Regex.Match(remaining, pattern))
+                        .Where(match => match.Success)
+                        .Select(match => match.Groups[^1])
+                        .Where(group => group.Index == index)
+                        .LongestOrNull(group => group.Value)
+                        ?.Value;
+
+                    if (bestMatch != null)
+                    {
+                        if (index > 1)
+                            result.Add(new Token(TokenType.Text, remaining[1..index]));
+                        result.Add(new Token(TokenType.LineStart, bestMatch));
+                        stream.Skip(index + bestMatch.Length - 1);
+                    }
+                }
             }
+
             return result.AsReadOnly();
         }
 

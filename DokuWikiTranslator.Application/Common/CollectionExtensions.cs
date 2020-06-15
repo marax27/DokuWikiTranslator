@@ -19,5 +19,18 @@ namespace DokuWikiTranslator.Application.Common
             }
             return result;
         }
+
+        public static int IndexOf<T>(this IEnumerable<T> source, Func<T, bool> predicate)
+        {
+            var i = 0;
+            foreach (var element in source)
+            {
+                if (predicate(element))
+                    return i;
+                ++i;
+            }
+
+            return -1;
+        }
     }
 }

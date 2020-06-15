@@ -42,6 +42,11 @@ namespace DokuWikiTranslator.Application.Parsing
                     case TokenType.Url:
                         result.Add(new HyperlinkNode(current.Value, null, current.Value));
                         break;
+                    case TokenType.LineStart:
+                        result.Add(ProcessLineStart(current, stream));
+                        break;
+                    case TokenType.NewLine:
+                        break;
                 }
             }
 
@@ -76,6 +81,12 @@ namespace DokuWikiTranslator.Application.Parsing
             {
                 throw new TranslationException($"Failed while processing marker {foundMarker}", exc);
             }
+        }
+
+        private IDokuWikiTreeNode ProcessLineStart(Token current, IStream<Token> stream)
+        {
+            var marker = current.Value;
+            return new RawTextNode($"[{marker}]");
         }
 
         private IDokuWikiTreeNode CreateMarkerNode(Token startToken, IList<Token> innerTokens, Token endToken, IMarker marker)
