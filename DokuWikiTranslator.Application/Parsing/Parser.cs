@@ -83,7 +83,8 @@ namespace DokuWikiTranslator.Application.Parsing
 
                     var children = Parse(innerTokens).ToList().AsReadOnly();
                     var sourceCode = GetSourceCode(new[] {current}.Concat(innerTokens).Concat(new[] {cur}));
-                    return new BasicMarkerNode(sourceCode, children, new TagMarker(marker, "h1"));
+                    var htmlTag = $"h{7 - marker.Length}";
+                    return new BasicMarkerNode(sourceCode, children, new TagMarker(marker, htmlTag));
                 }
                 else return new RawTextNode(marker);
             }
