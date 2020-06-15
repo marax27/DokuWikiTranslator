@@ -1,4 +1,5 @@
-=== Basic formatting ===
+===== Basic formatting =====
+==== Subsection ====
 DokuWiki supports **bold**, //italic//, __underlined__ and ''monospaced'' texts. Of course you can **//__''combine''__//** all these.
 
 You can use <sub>subscript</sub> and <sup>superscript</sup>, too.
@@ -47,9 +48,10 @@ Text after a separator.
 === Quotes ===
 > 1st level quote
 >> 2nd level quote
+>>> 3rd level quote
 
 === Special strings ===
 
-->, <-, <->, =>, <=, <=>
+* Special: ->, <-, <->, =>, <=, <=>
 <<cudzysłów niemiecki>>
 

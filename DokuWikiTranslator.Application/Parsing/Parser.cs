@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,33 +24,43 @@ namespace DokuWikiTranslator.Application.Parsing
             var stream = CreateStream(tokens);
             var result = new List<IDokuWikiTreeNode>();
             var startOfLine = true;
+            var lineCount = 1;
+            Token current = null;
 
-            while (stream.HasNext())
+            try
             {
-                var current = stream.Next();
-                switch (current.Type)
+                while (stream.HasNext())
                 {
-                    case TokenType.Text:
-                        result.Add(new RawTextNode(current.Value));
-                        startOfLine = string.IsNullOrWhiteSpace(current.Value);
-                        break;
-                    case TokenType.Special:
-                        result.Add(ProcessSpecial(current, stream, startOfLine));
-                        startOfLine = false;
-                        break;
-                    case TokenType.Marker:
-                        result.Add(ProcessMarker(current, stream));
-                        startOfLine = false;
-                        break;
-                    case TokenType.Url:
-                        result.Add(new HyperlinkNode(current.Value, null, current.Value));
-                        startOfLine = false;
-                        break;
-                    case TokenType.NewLine:
-                        result.Add(new RawTextNode("\n"));
-                        startOfLine = true;
-                        break;
+                    current = stream.Next();
+                    switch (current.Type)
+                    {
+                        case TokenType.Text:
+                            result.Add(new RawTextNode(current.Value));
+                            startOfLine = string.IsNullOrWhiteSpace(current.Value);
+                            break;
+                        case TokenType.Special:
+                            result.Add(ProcessSpecial(current, stream, startOfLine));
+                            startOfLine = false;
+                            break;
+                        case TokenType.Marker:
+                            result.Add(ProcessMarker(current, stream));
+                            startOfLine = false;
+                            break;
+                        case TokenType.Url:
+                            result.Add(new HyperlinkNode(current.Value, null, current.Value));
+                            startOfLine = false;
+                            break;
+                        case TokenType.NewLine:
+                            result.Add(new RawTextNode("\n"));
+                            startOfLine = true;
+                            ++lineCount;
+                            break;
+                    }
                 }
+            }
+            catch (Exception exc)
+            {
+                throw new TranslationException($"(Line {lineCount}) Failed to parse token '{current?.Value}':\n\t{exc.Message}", exc);
             }
 
             return result;
@@ -61,7 +70,6 @@ namespace DokuWikiTranslator.Application.Parsing
         {
             var marker = current.Value;
             
-            Console.WriteLine($"Try: {startOfLine} | {marker}");
             if (startOfLine)
             {
                 // Line start marker.
@@ -115,7 +123,7 @@ namespace DokuWikiTranslator.Application.Parsing
             }
             catch (StreamEndException exc)
             {
-                throw new TranslationException($"Failed while processing marker {foundMarker}", exc);
+                throw new TranslationException($"Closing marker not found for '{foundMarker.Start}'.", exc);
             }
         }
 

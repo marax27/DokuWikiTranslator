@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using DokuWikiTranslator.Application;
 using DokuWikiTranslator.Application.Exceptions;
@@ -12,7 +12,6 @@ namespace DokuWikiTranslator.Cli
             if (args.Length < 2)
             {
                 Console.WriteLine("Error: Filename not provided.");
-                return;
             }
 
             var sourceCode = LoadSourceFile(args[1]);
@@ -28,7 +27,7 @@ namespace DokuWikiTranslator.Cli
             }
             catch (TranslationException exc)
             {
-                Console.WriteLine($"Error: {exc.Message}\n{exc.InnerException}");
+                Console.WriteLine($"Translation error:\n{exc.Message}\n\nDetails:\n{exc.InnerException}");
             }
         }
 
