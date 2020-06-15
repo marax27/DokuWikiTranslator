@@ -22,6 +22,5 @@
         Special,
         NewLine,
         Url,
-        LineStart
     }
 }
