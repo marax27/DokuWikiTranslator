@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DokuWikiTranslator.Application.Parsing;
 using DokuWikiTranslator.Application.Scanner;
 
@@ -9,7 +11,8 @@ namespace DokuWikiTranslator.Application
         public string Translate(string inputCode)
         {
             ILexer lexer = new Lexer();
-            var tokens = lexer.Lex(inputCode);
+            var tokens = lexer.Lex(inputCode).ToList();
+            _onTokensScanned?.Invoke(tokens);
 
             IParser parser = new Parser();
             var dokuWikiNodes = parser.Parse(tokens);
@@ -19,5 +22,12 @@ namespace DokuWikiTranslator.Application
 
             return outputCode;
         }
+
+        public void OnTokensScanned(Action<IEnumerable<Token>> action)
+        {
+            _onTokensScanned = action;
+        }
+
+        private Action<IEnumerable<Token>>? _onTokensScanned = null;
     }
 }

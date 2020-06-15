@@ -17,6 +17,8 @@ namespace DokuWikiTranslator.Application.DokuWiki
             new SpecialString("(c)", "&copy;"),
             new SpecialString("(r)", "&reg;"),
             new SpecialString("(tm)", "&trade;"),
+            new SpecialString("\\\\ ", "<br/>"), 
+            new SpecialString("\\\\\n", "<br/>"),
         };
     }
 }
