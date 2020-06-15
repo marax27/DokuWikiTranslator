@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,6 +7,7 @@ using DokuWikiTranslator.Application.DokuWiki;
 using DokuWikiTranslator.Application.DokuWiki.Abstractions;
 using DokuWikiTranslator.Application.DokuWiki.Features;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
+using DokuWikiTranslator.Application.Exceptions;
 using DokuWikiTranslator.Application.Scanner;
 
 namespace DokuWikiTranslator.Application.Parsing
@@ -23,34 +23,85 @@ namespace DokuWikiTranslator.Application.Parsing
         {
             var stream = CreateStream(tokens);
             var result = new List<IDokuWikiTreeNode>();
+            var startOfLine = true;
+            var lineCount = 1;
+            Token current = null;
 
-            while (stream.HasNext())
+            try
             {
-                var current = stream.Next();
-                switch (current.Type)
+                while (stream.HasNext())
                 {
-                    case TokenType.Text:
-                        result.Add(new RawTextNode(current.Value));
-                        break;
-                    case TokenType.Special:
-                        result.Add(ProcessSpecial(current));
-                        break;
-                    case TokenType.Marker:
-                        result.Add(ProcessMarker(current, stream));
-                        break;
-                    default:
-                        continue;
+                    current = stream.Next();
+                    switch (current.Type)
+                    {
+                        case TokenType.Text:
+                            result.Add(new RawTextNode(current.Value));
+                            startOfLine = string.IsNullOrWhiteSpace(current.Value);
+                            break;
+                        case TokenType.Special:
+                            result.Add(ProcessSpecial(current, stream, startOfLine));
+                            startOfLine = false;
+                            break;
+                        case TokenType.Marker:
+                            result.Add(ProcessMarker(current, stream));
+                            startOfLine = false;
+                            break;
+                        case TokenType.Url:
+                            result.Add(new HyperlinkNode(current.Value, null, current.Value));
+                            startOfLine = false;
+                            break;
+                        case TokenType.NewLine:
+                            result.Add(new RawTextNode("\n"));
+                            startOfLine = true;
+                            ++lineCount;
+                            break;
+                    }
                 }
+            }
+            catch (Exception exc)
+            {
+                throw new TranslationException($"(Line {lineCount}) Failed to parse token '{current?.Value}':\n\t{exc.Message}", exc);
             }
 
             return result;
         }
 
-        private IDokuWikiTreeNode ProcessSpecial(Token current)
+        private IDokuWikiTreeNode ProcessSpecial(Token current, IStream<Token> stream, bool startOfLine)
         {
-            var special = SpecialStringCollection.SpecialStrings
-                .Single(s => s.Source == current.Value);
-            return new RawTextNode(special.Output);
+            var marker = current.Value;
+            
+            if (startOfLine)
+            {
+                // Line start marker.
+                if (marker.StartsWith("----"))
+                {
+                    return new BasicMarkerNode(marker,
+                        new List<IDokuWikiTreeNode>().AsReadOnly(),
+                        new TagMarker(marker, "hr"));
+                }
+                else if (marker.StartsWith("=="))
+                {
+                    var innerTokens = new List<Token>();
+                    var cur = stream.Next();
+                    while (cur.Value != marker)
+                    {
+                        innerTokens.Add(cur);
+                        cur = stream.Next();
+                    }
+
+                    var children = Parse(innerTokens).ToList().AsReadOnly();
+                    var sourceCode = GetSourceCode(new[] {current}.Concat(innerTokens).Concat(new[] {cur}));
+                    var htmlTag = $"h{7 - marker.Length}";
+                    return new BasicMarkerNode(sourceCode, children, new TagMarker(marker, htmlTag));
+                }
+                else return new RawTextNode(marker);
+            }
+            else
+            {
+                var special = SpecialStringCollection.SpecialStrings
+                    .SingleOrDefault(s => s.Source == marker);
+                return new RawTextNode(special?.Output ?? marker);
+            }
         }
 
         private IDokuWikiTreeNode ProcessMarker(Token startToken, IStream<Token> stream)
@@ -58,15 +109,22 @@ namespace DokuWikiTranslator.Application.Parsing
             var allMarkers = MarkerCollection.LanguageMarkers;
             var foundMarker = allMarkers.Single(marker => marker.Start == startToken.Value);
 
-            var innerTokens = new List<Token>();
-            var current = stream.Next();
-            while (current.Value != foundMarker.End)
+            try
             {
-                innerTokens.Add(current);
-                current = stream.Next();
-            }
+                var innerTokens = new List<Token>();
+                var current = stream.Next();
+                while (current.Value != foundMarker.End)
+                {
+                    innerTokens.Add(current);
+                    current = stream.Next();
+                }
 
-            return CreateMarkerNode(startToken, innerTokens, current, foundMarker);
+                return CreateMarkerNode(startToken, innerTokens, current, foundMarker);
+            }
+            catch (StreamEndException exc)
+            {
+                throw new TranslationException($"Closing marker not found for '{foundMarker.Start}'.", exc);
+            }
         }
 
         private IDokuWikiTreeNode CreateMarkerNode(Token startToken, IList<Token> innerTokens, Token endToken, IMarker marker)
@@ -104,7 +162,7 @@ namespace DokuWikiTranslator.Application.Parsing
             var parts = innerText.Split('|', 2);
             var url = parts[0];
             var description = parts.Length > 1 ? parts[1] : url;
-            return new HyperlinkNode(url, description, sourceCode, new List<DokuWikiTreeNode>());
+            return new HyperlinkNode(url, description, sourceCode);
         }
 
         private ReadOnlyCollection<IDokuWikiTreeNode> ProcessInnerNodesRecursively(IEnumerable<Token> tokens)

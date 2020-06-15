@@ -42,7 +42,7 @@ namespace DokuWikiTranslator.Application.Generation.Features
 
         private string GetBody()
             => Children.Any()
-                ? string.Join("\n", Children.Select(node => node.Generate()))
+                ? string.Join("", Children.Select(node => node.Generate()))
                 : "";
     }
 }

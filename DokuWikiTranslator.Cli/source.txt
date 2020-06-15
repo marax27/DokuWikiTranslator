@@ -1,5 +1,57 @@
-sample text**//very <del>artistic</del>{// not-so much**...
+===== Basic formatting =====
+==== Subsection ====
+DokuWiki supports **bold**, //italic//, __underlined__ and ''monospaced'' texts. Of course you can **//__''combine''__//** all these.
 
+You can use <sub>subscript</sub> and <sup>superscript</sup>, too.
 
-Something=>Else, **<<xyz>>**. Now, %%__this__ text **shan't** be formatted.%%  
- end of text
+Some //**mixed** styling. You can mark something as <del>deleted</del> as well.//
+
+=== Hyperlinks ===
+External links: www.example.com, http://example.com , [[example.com]]
+
+Links with caption: [[www.example.com|Link caption]]
+
+=== Footnotes ===
+Some text ((This is a footnote.)) and more text.
+
+=== Disable formatting ===
+<nowiki>This is some text which contains addresses like this: http://www.splitbrain.org and **formatting**, but nothing is done with it. The same is true for //__this__ text// with a smiley ;-). </nowiki>
+
+%%More __unformatted__ text: [[www.example.com]]%%
+
+=== Text flow ===
+Paragraph.
+
+Another paragraph.
+
+This is some text with some linebreaks\\ Note that the
+two backslashes are only recognized at the end of a line\\
+or followed by\\ a whitespace \\this happens without it.
+
+=== Sections ===
+== Subsection ==
+...
+===== Important section =====
+Some text.
+----
+Text after a separator.
+
+=== Lists ===
+* Enumeration
+* Enumeration
+* Enumeration
+
+- No numbers
+- No numbers
+- No numbers
+
+=== Quotes ===
+> 1st level quote
+>> 2nd level quote
+>>> 3rd level quote
+
+=== Special strings ===
+
+* Special: ->, <-, <->, =>, <=, <=>
+<<cudzysłów niemiecki>>
+

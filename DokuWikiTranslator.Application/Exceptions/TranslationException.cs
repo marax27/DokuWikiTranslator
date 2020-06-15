@@ -6,5 +6,8 @@ namespace DokuWikiTranslator.Application.Exceptions
     {
         public TranslationException(string message)
             : base(message) { }
+
+        public TranslationException(string message, Exception inner)
+            : base(message, inner) { }
     }
 }

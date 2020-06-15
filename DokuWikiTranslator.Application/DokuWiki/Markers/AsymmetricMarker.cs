@@ -12,5 +12,8 @@
             End = end;
             HtmlTag = htmlTag;
         }
+
+        public override string ToString()
+            => $"<AsymmetricMarker({Start}, {End})->'{HtmlTag}'>";
     }
 }
