@@ -33,23 +33,18 @@ namespace DokuWikiTranslator.Application.Scanner
                 {
                     var current = stream.Next();
 
-                    ReadOnlyCollection<Token> tokens = TryFindUrl(stream);
-
+                    ReadOnlyCollection<Token> tokens = TryFindMarker(stream);
                     if (!tokens.Any())
                     {
-                        tokens = TryFindMarker(stream);
+                        tokens = TryNewLine(stream);
+                        if (tokens.Any(token => token.Type == TokenType.NewLine))
+                            ++lineCounter;
                         if (!tokens.Any())
                         {
-                            tokens = TryNewLine(stream);
-                            if (tokens.Any(token => token.Type == TokenType.NewLine))
-                                ++lineCounter;
+                            tokens = TryFindSpecial(stream);
                             if (!tokens.Any())
                             {
-                                tokens = TryFindSpecial(stream);
-                                if (!tokens.Any())
-                                {
-                                    _buffer += current;
-                                }
+                                _buffer += current;
                             }
                         }
                     }
@@ -64,22 +59,6 @@ namespace DokuWikiTranslator.Application.Scanner
 
             result.AddRange(PopBuffer());
             return result;
-        }
-
-        private ReadOnlyCollection<Token> TryFindUrl(ICharacterStream stream)
-        {
-            var result = new List<Token>();
-            var textEnd = stream.Remaining.IndexOfAny(" \t\r\n".ToArray());
-            var substring = stream.Remaining[..textEnd].ToString();
-
-            if (substring.IsValidUrl())
-            {
-                result.AddRange(PopBuffer());
-                result.Add(new Token(TokenType.Url, substring));
-                stream.Skip(substring.Length - 1);
-            }
-
-            return result.AsReadOnly();
         }
 
         private ReadOnlyCollection<Token> TryFindMarker(ICharacterStream stream)

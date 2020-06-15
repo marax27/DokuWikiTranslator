@@ -21,6 +21,5 @@
         Text,
         Special,
         NewLine,
-        Url,
     }
 }

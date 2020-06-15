@@ -46,10 +46,6 @@ namespace DokuWikiTranslator.Application.Parsing
                             result.Add(ProcessMarker(current, stream));
                             startOfLine = false;
                             break;
-                        case TokenType.Url:
-                            result.Add(new HyperlinkNode(current.Value, null, current.Value));
-                            startOfLine = false;
-                            break;
                         case TokenType.NewLine:
                             result.Add(new RawTextNode("\n"));
                             startOfLine = true;
