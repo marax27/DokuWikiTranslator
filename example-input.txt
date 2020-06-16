@@ -43,24 +43,10 @@ Some text.
 ----
 Text after a separator.
 
-==== Lists ====
-* Enumeration
-* Enumeration
-* Enumeration
-
-- No numbers
-- No numbers
-- No numbers
-
-==== Quotes ====
-> 1st level quote
->> 2nd level quote
->>> 3rd level quote
-
 ==== Special __strings__ ====
 
 * Special: <-, <->, ->, =>, <=, <=>\\
 <<cudzysłów niemiecki>>\\
 end
 
-zażółć gęślą jaźń
+__Polskie znaki:__ zażółć gęślą jaźń
