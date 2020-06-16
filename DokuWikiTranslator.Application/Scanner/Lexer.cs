@@ -139,7 +139,15 @@ namespace DokuWikiTranslator.Application.Scanner
             if (stream.Remaining.StartsWith("\n"))
             {
                 result.AddRange(PopBuffer());
-                result.Add(new Token(TokenType.NewLine, "\n"));
+
+                var remaining = stream.Remaining.ToString();
+                var multiLineMatch = Regex.Match(remaining, "\n[ \t\n]*\n");
+                if (multiLineMatch.Success && multiLineMatch.Index == 0)
+                {
+                    result.Add(new Token(TokenType.NewLine, multiLineMatch.Value));
+                }
+                else
+                    result.Add(new Token(TokenType.NewLine, "\n"));
             }
 
             return result.AsReadOnly();

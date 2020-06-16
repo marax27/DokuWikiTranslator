@@ -26,7 +26,7 @@ namespace DokuWikiTranslator.Application.Parsing
             var result = new List<IDokuWikiTreeNode>();
             var startOfLine = true;
             var lineCount = 1;
-            Token current = null;
+            Token? current = null;
 
             try
             {
@@ -48,7 +48,7 @@ namespace DokuWikiTranslator.Application.Parsing
                             startOfLine = false;
                             break;
                         case TokenType.NewLine:
-                            result.Add(new RawTextNode("\n"));
+                            result.Add(ProcessNewLine(current));
                             startOfLine = true;
                             ++lineCount;
                             break;
@@ -63,10 +63,21 @@ namespace DokuWikiTranslator.Application.Parsing
             return result;
         }
 
+        private IDokuWikiTreeNode ProcessNewLine(Token current)
+        {
+            var value = current.Value;
+            if (value.Length == 1)
+                return new RawTextNode("\n");
+            else
+                return new BasicMarkerNode(value,
+                    new List<IDokuWikiTreeNode>().AsReadOnly(),
+                    new TagMarker(value, "br"));
+        }
+
         private IDokuWikiTreeNode ProcessSpecial(Token current, IStream<Token> stream, bool startOfLine)
         {
             var marker = current.Value;
-            
+
             if (startOfLine)
             {
                 // Line start marker.
@@ -78,6 +89,7 @@ namespace DokuWikiTranslator.Application.Parsing
                 }
                 else if (marker.StartsWith("=="))
                 {
+                    // Section.
                     var innerTokens = new List<Token>();
                     var cur = stream.Next();
                     while (cur.Value != marker)
@@ -91,7 +103,7 @@ namespace DokuWikiTranslator.Application.Parsing
                     var htmlTag = $"h{7 - marker.Length}";
                     return new BasicMarkerNode(sourceCode, children, new TagMarker(marker, htmlTag));
                 }
-                else return new RawTextNode(marker);
+                else throw new TranslationException($"Unsupported special marker: {marker}");
             }
             else
             {
