@@ -4,10 +4,18 @@ namespace DokuWikiTranslator.Application.Exceptions
 {
     public class TranslationException : Exception
     {
-        public TranslationException(string message)
-            : base(message) { }
+        public int? LineCount { get; }
 
-        public TranslationException(string message, Exception inner)
-            : base(message, inner) { }
+        public TranslationException(string message, int? lineCount)
+            : base(message)
+        {
+            LineCount = lineCount;
+        }
+
+        public TranslationException(string message, int? lineCount, Exception inner)
+            : base(message, inner)
+        {
+            LineCount = lineCount;
+        }
     }
 }

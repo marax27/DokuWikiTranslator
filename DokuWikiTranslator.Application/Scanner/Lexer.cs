@@ -55,7 +55,7 @@ namespace DokuWikiTranslator.Application.Scanner
             }
             catch (Exception exc)
             {
-                throw new TranslationException($"Lexer error at line {lineCounter}: {exc.Message}", exc);
+                throw new TranslationException($"Lexer error: {exc.Message}", lineCounter, exc);
             }
 
             result.AddRange(PopBuffer());

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using DokuWikiTranslator.Application;
@@ -25,6 +25,8 @@ namespace DokuWikiTranslator.Cli
             sourceCode = PreprocessSource(sourceCode);
 
             var translator = new Translator();
+
+            // Displays all tokens before parsing. Can be commented out.
             translator.OnTokensScanned(DisplayAllTokens);
 
             try
@@ -34,7 +36,7 @@ namespace DokuWikiTranslator.Cli
             }
             catch (TranslationException exc)
             {
-                Console.Error.WriteLine($"Translation error:\n{exc.Message}\n\nDetails:\n{exc.InnerException}");
+                Console.Error.WriteLine($"Translation error at line {exc.LineCount}:\n{exc.Message}");
             }
         }
 
@@ -42,6 +44,7 @@ namespace DokuWikiTranslator.Cli
         {
             foreach(var t in tokens)
                 Console.Error.Write(t.Type.ToString()[0] + "(" + t.Value.Replace("\n", @"\n") + ") ");
+            Console.Error.WriteLine("\n");
         }
 
         private static string PreprocessSource(string sourceCode)

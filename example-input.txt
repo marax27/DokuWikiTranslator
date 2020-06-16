@@ -2,7 +2,8 @@ Plik źródłowy z kodem DokuWiki DokuWiki, stworzony na podstawie [[https://www
 
 ===== Basic formatting =====
 ==== Subsection ====
-DokuWiki supports **bold**, //italic//, __underlined__ and ''monospaced'' texts. Of course you can **//__''combine''__//** all these.
+== Subsubsection ==
+DokuWiki ==== supports ==== **bold**, //italic//, __underlined__ and ''monospaced'' texts. Of course you can **//__''combine''__//** all these.
 
 You can use <sub>subscript</sub> and <sup>superscript</sup>, too.
 
@@ -14,7 +15,9 @@ External links: www.example.com, [[http://example.com]] , [[example.com]]
 Links with caption: [[www.example.com|Link caption]]
 
 ==== Disable formatting ====
-<nowiki>This is some text which contains addresses like this: http://www.splitbrain.org and **formatting**, but nothing is done with it. The same is true for //__this__ text//. </nowiki>
+<nowiki>This is some text which contains **formatting**, but nothing is done with it. The same is true for //__this__ text//. </nowiki>
+
+This **is formatted.**
 
 %%More __unformatted__ text: [[www.example.com]]%%
 
@@ -45,8 +48,8 @@ Text after a separator.
 
 ==== Special __strings__ ====
 
-* Special: <-, <->, ->, =>, <=, <=>\\
+Special: <-, <->, ->, =>, <=, <=>\\
+(c) (tm)\\
 <<cudzysłów niemiecki>>\\
-end
 
 __Polskie znaki:__ zażółć gęślą jaźń

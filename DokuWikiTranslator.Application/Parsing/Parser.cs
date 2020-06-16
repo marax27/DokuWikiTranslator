@@ -57,7 +57,7 @@ namespace DokuWikiTranslator.Application.Parsing
             }
             catch (Exception exc)
             {
-                throw new TranslationException($"(Line {lineCount}) Failed to parse token '{current?.Value}':\n\t{exc.Message}", exc);
+                throw new TranslationException($"Failed to parse token '{current?.Value}':\n\t{exc.Message}", lineCount, exc);
             }
 
             return result;
@@ -103,14 +103,10 @@ namespace DokuWikiTranslator.Application.Parsing
                     var htmlTag = $"h{7 - marker.Length}";
                     return new BasicMarkerNode(sourceCode, children, new TagMarker(marker, htmlTag));
                 }
-                else throw new TranslationException($"Unsupported special marker: {marker}");
             }
-            else
-            {
-                var special = SpecialStringCollection.SpecialStrings
-                    .SingleOrDefault(s => s.Source == marker);
-                return new RawTextNode(special?.Output ?? marker);
-            }
+            var special = SpecialStringCollection.SpecialStrings
+                .SingleOrDefault(s => s.Source == marker);
+            return new RawTextNode(special?.Output ?? marker);
         }
 
         private IDokuWikiTreeNode ProcessMarker(Token startToken, IStream<Token> stream)
@@ -132,7 +128,7 @@ namespace DokuWikiTranslator.Application.Parsing
             }
             catch (StreamEndException exc)
             {
-                throw new TranslationException($"Closing marker not found for '{foundMarker.Start}'.", exc);
+                throw new TranslationException($"Closing marker not found for '{foundMarker.Start}'.", null, exc);
             }
         }
 
