@@ -8,6 +8,7 @@ using DokuWikiTranslator.Application.DokuWiki.Abstractions;
 using DokuWikiTranslator.Application.DokuWiki.Features;
 using DokuWikiTranslator.Application.DokuWiki.Markers;
 using DokuWikiTranslator.Application.Exceptions;
+using DokuWikiTranslator.Application.Generation;
 using DokuWikiTranslator.Application.Scanner;
 
 namespace DokuWikiTranslator.Application.Parsing
@@ -147,10 +148,17 @@ namespace DokuWikiTranslator.Application.Parsing
 
         private MediaNode HandleMedia(string innerText, string sourceCode)
         {
-            var parts = innerText.Split('|', 2);
+            var whiteLeft = " \t".Contains(innerText[0]);
+            var whiteRight = " \t".Contains(innerText[^1]);
+            var alignment = whiteLeft
+                ? (whiteRight ? MediaAlignment.Center : MediaAlignment.Right)
+                : (whiteRight ? MediaAlignment.Left : MediaAlignment.None);
+
+            var trimmedInnerText = innerText.Trim();
+            var parts = trimmedInnerText.Split('|', 2);
             var url = parts[0];
             var description = parts.Length > 1 ? parts[1] : null;
-            return new MediaNode(url, description, sourceCode);
+            return new MediaNode(url, description, sourceCode, alignment);
         }
 
         private HyperlinkNode HandleHyperlink(string innerText, string sourceCode)

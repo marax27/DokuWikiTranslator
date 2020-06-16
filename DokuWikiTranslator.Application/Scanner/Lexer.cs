@@ -24,8 +24,8 @@ namespace DokuWikiTranslator.Application.Scanner
         {
             ICharacterStream stream = new CharacterStream(sourceCode);
             var result = new List<Token>();
+            var lineCounter = 1;
             _buffer = "";
-            int lineCounter = 1;
 
             try
             {
@@ -39,6 +39,7 @@ namespace DokuWikiTranslator.Application.Scanner
                         tokens = TryNewLine(stream);
                         if (tokens.Any(token => token.Type == TokenType.NewLine))
                             ++lineCounter;
+
                         if (!tokens.Any())
                         {
                             tokens = TryFindSpecial(stream);
@@ -92,7 +93,7 @@ namespace DokuWikiTranslator.Application.Scanner
             var result = new List<Token>();
 
             // Find start-of-line marker.
-            string[] patterns = { @">+", @"==+", @"[^\*](\*)[^\*]", @"[^-](-)[^-]", "----+" };
+            string[] patterns = { @">+", @"==+", @"[^\*](\*)[^\*]", @"[^-](-)[^->]", "----+" };
             var remaining = stream.Remaining.ToString();
             var index = remaining.IndexOf(ch => !char.IsWhiteSpace(ch));
             if (index != -1)
